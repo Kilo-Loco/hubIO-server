@@ -38,8 +38,6 @@ final class User: Model {
     }
     
     init(json: JSON, drop: Droplet) throws {
-        
-        
         let fieldValidation = FieldLengthValidation()
         let nameValidation = NameValidation()
         
@@ -47,6 +45,10 @@ final class User: Model {
             let username: String = try json.get(Keys.username),
             nameValidation.isValid(username)
             else { throw Abort.invalid("username") }
+        
+        guard
+            try User.makeQuery().filter(Keys.username, username).first() == nil
+            else { throw Abort(.badRequest, reason: "That username is taken. Please try another.") }
         
         guard
             let password: String = try json.get(Keys.password),

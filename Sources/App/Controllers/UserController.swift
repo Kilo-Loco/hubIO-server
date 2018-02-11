@@ -19,7 +19,8 @@ internal struct UserController {
 
         let group = drop.grouped("api", "users")
         group.get(handler: getAllUsers)
-        group.post(handler: createUser)
+        group.post(handler: signUp)
+        group.post("signIn", handler: signIn)
         
     }
     
@@ -28,7 +29,7 @@ internal struct UserController {
         return try users.makeJSON()
     }
     
-    private func createUser(_ request: Request) throws -> ResponseRepresentable {
+    private func signUp(_ request: Request) throws -> ResponseRepresentable {
         guard let json = request.json else { throw Abort.badRequest }
         
         let user = try User(json: json, drop: drop)
@@ -37,5 +38,37 @@ internal struct UserController {
         return try user.makeJSON()
     }
     
+    private func signIn(_ request: Request) throws -> ResponseRepresentable {
+        guard let json = request.json else { throw Abort.badRequest }
+        
+        let username: String = try json.get(User.Keys.username)
+        let password: String = try json.get(User.Keys.password)
+        
+        let users = try User.makeQuery().filter(User.Keys.username, username)
+        
+        // FIND WAY TO MAKE SEARCH CASE INSENSITIVE
+        
+//        let users = try User.database?.raw("SELECT * FROM `users` WHERE username LIKE '\(username)'")
+        
+        guard
+            let user = try users.first(),
+            user.password == password
+            else { throw Abort(.badRequest, reason: "Hey dumbass, try again!") }
+        //invalid username or password
+        
+        return try user.makeJSON()
+    }
+    
     
 }
+
+
+
+
+
+
+
+
+
+
+
