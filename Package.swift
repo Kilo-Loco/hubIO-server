@@ -12,9 +12,13 @@ let package = Package(
         .package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "2.1.0")),
         .package(url: "https://github.com/vapor/fluent-provider.git", .upToNextMajor(from: "1.2.0")),
         .package(url: "https://github.com/vapor/validation-provider.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/vapor/auth-provider.git", .upToNextMajor(from: "1.0.0")),
     ],
     targets: [
-        .target(name: "App", dependencies: ["Vapor", "FluentProvider", "ValidationProvider"],
+        .target(name: "App", dependencies: ["Vapor",
+                                            "FluentProvider",
+                                            "ValidationProvider",
+                                            "AuthProvider"],
                 exclude: [
                     "Config",
                     "Public",

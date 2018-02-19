@@ -35,6 +35,9 @@ internal struct UserController {
         let user = try User(json: json, drop: drop)
         try user.save()
         
+        let token = try AccessToken.generate(for: user)
+        print(token.token)
+        
         return try user.makeJSON()
     }
     

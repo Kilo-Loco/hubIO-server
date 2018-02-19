@@ -8,6 +8,7 @@
 import Vapor
 import FluentProvider
 import Validation
+import AuthProvider
 
 final class User: Model {
     let storage = Storage()
@@ -131,11 +132,15 @@ extension User: Preparation {
     
 }
 
+extension User: TokenAuthenticatable {
+    public typealias TokenType = AccessToken
+}
 
-
-
-
-
+extension Request {
+    func user() throws -> User {
+        return try auth.assertAuthenticated()
+    }
+}
 
 
 
