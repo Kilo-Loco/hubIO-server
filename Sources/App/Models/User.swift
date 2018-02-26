@@ -14,24 +14,29 @@ final class User: Model {
     let storage = Storage()
     
     var username: String
+    var usernameLowercased: String
     var password: String
     let fullName: String
     let email: String
     var avatarName: String
     
     struct Keys {
-        static let id           = "id"
-        static let username     = "username"
-        static let password     = "password"
-        static let fullName     = "fullName"
-        static let avatarName   = "avatarName"
-        static let email        = "email"
+        static let id                   = "id"
+        static let username             = "username"
+        static let usernameLowercased   = "usernameLowercased"
+        static let password             = "password"
+        static let fullName             = "fullName"
+        static let avatarName           = "avatarName"
+        static let email                = "email"
     }
-    
     
     init(username: String, password: String, fullName: String, avatarName: String, email: String) {
         
         self.username = username
+        
+        let usernameLowercased = username.lowercased().replacingOccurrences(of: " ", with: "")
+        self.usernameLowercased = usernameLowercased
+        
         self.password = password
         self.fullName = fullName
         self.avatarName = avatarName
@@ -47,8 +52,10 @@ final class User: Model {
             nameValidation.isValid(username)
             else { throw Abort.invalid("username") }
         
+        let usernameLowercased = username.lowercased().replacingOccurrences(of: " ", with: "")
+        
         guard
-            try User.makeQuery().filter(Keys.username, username).first() == nil
+            try User.makeQuery().filter(Keys.usernameLowercased, usernameLowercased).first() == nil
             else { throw Abort(.badRequest, reason: "That username is taken. Please try another.") }
         
         guard
@@ -72,6 +79,7 @@ final class User: Model {
             else { throw Abort.invalid("email address") }
         
         self.username = username
+        self.usernameLowercased = usernameLowercased
         self.password = password
         self.fullName = fullName
         self.avatarName = avatarName
@@ -82,6 +90,7 @@ final class User: Model {
     
     init(row: Row) throws {
         self.username = try row.get(Keys.username)
+        self.usernameLowercased = try row.get(Keys.usernameLowercased)
         self.password = try row.get(Keys.password)
         self.fullName = try row.get(Keys.fullName)
         self.avatarName = try row.get(Keys.avatarName)
@@ -91,6 +100,7 @@ final class User: Model {
     func makeRow() throws -> Row {
         var row = Row()
         try row.set(Keys.username, self.username)
+        try row.set(Keys.usernameLowercased, self.usernameLowercased)
         try row.set(Keys.password, self.password)
         try row.set(Keys.fullName, self.fullName)
         try row.set(Keys.avatarName, self.avatarName)
@@ -119,6 +129,7 @@ extension User: Preparation {
         try database.create(self) { builder in
             builder.id()
             builder.string(Keys.username)
+            builder.string(Keys.usernameLowercased)
             builder.string(Keys.password)
             builder.string(Keys.fullName)
             builder.string(Keys.avatarName)

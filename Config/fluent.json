@@ -9,7 +9,7 @@
     "//": "Naming convention to use for creating foreign id keys,",
     "//": "e.g., `user_id`",
     "//": "`camelCase` option is also available.",
-    "keyNamingConvention": "snake_case",
+    "keyNamingConvention": "camelCase",
     
     "//": "Name of the table Fluent uses to track migrations.",
     "//": "If null, preparations will not be run.",
